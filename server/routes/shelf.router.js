@@ -19,14 +19,32 @@ router.get('/', (req, res) => {
  * Add an item for the logged in user to the shelf
  */
 router.post('/', (req, res) => {
-  // endpoint functionality
+  const newItem = req.body;
+  const queryText = `INSERT INTO "item" ("description", "image_url")
+                    VALUES ($1, $2)`;
+  const queryValues = [
+    newItem.description,
+    newItem.image_url,
+  ];
+  pool.query(queryText, queryValues)
+  .then(() => {res.sendStatus(201) })
+  .catch((error) => {
+    console.log(`Error adding new item in router`, error);
+    res.sendStatus(500);
+  });
 });
 
 /**
  * Delete an item
  */
 router.delete('/:id', (req, res) => {
-  // endpoint functionality
+  const queryText = 'DELETE FROM "item" WHERE "id" = $1';
+  pool.query(queryText, [req.params.id])
+  .then(() => {res.sendStatus(200); })
+  .catch((error) => {
+    console.log(`Error completing DELETE in router ${error}`)
+    res.sendStatus(500);
+  })
 });
 
 module.exports = router;
